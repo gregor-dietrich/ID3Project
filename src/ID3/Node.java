@@ -3,30 +3,21 @@ package ID3;
 import java.util.HashMap;
 
 public final class Node {
+    private final HashMap<String, Node> children = new HashMap<>();
+    private String data;
+    private Node parent;
+    private NodeType type;
+
+    public Node(final String data) {
+        setData(data);
+    }
+
     public NodeType getType() {
         return type;
     }
 
-    public void setType(NodeType type) {
+    public void setType(final NodeType type) {
         this.type = type;
-    }
-
-    public enum NodeType {
-        ROOTNODE,
-        LEAFNODE,
-        BRANCH
-    }
-    private String data;
-    private Node parent;
-    private NodeType type;
-    private final HashMap<String, Node> children = new HashMap<>();
-
-    public Node() {
-        this("");
-    }
-
-    public Node(final String data) {
-        setData(data);
     }
 
     public String getData() {
@@ -49,8 +40,8 @@ public final class Node {
         return children;
     }
 
-    public void addChild(final String name, final Node node) {
-        children.put(name, node);
+    public void addChild(final String name) {
+        children.put(name, new Node(name));
     }
 
     public void removeChild(final String name) {
@@ -69,12 +60,18 @@ public final class Node {
         this.type = type;
     }
 
-    public void print(final String prefix, boolean isTail) {
+    public void print(final String prefix, final boolean isTail) {
         System.out.println(prefix + (isTail ? "\\--" : "|--") + data);
-        var childrenList = children.keySet().stream().toList();
+        final var childrenList = children.keySet().stream().toList();
         for (int i = 0; i < childrenList.size() - 1; i++)
             children.get(childrenList.get(i)).print(prefix + (isTail ? "  " : "| "), false);
         if (children.size() > 0)
             children.get(childrenList.get(childrenList.size() - 1)).print(prefix + (isTail ? "  " : "| "), true);
+    }
+
+    public enum NodeType {
+        ROOTNODE,
+        LEAFNODE,
+        BRANCH
     }
 }
