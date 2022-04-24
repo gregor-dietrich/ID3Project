@@ -1,5 +1,6 @@
 package ID3;
 
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -9,15 +10,17 @@ public final class DataTable {
     private final ArrayList<String> labels;
     private final HashMap<String, HashMap<String, Integer>> yesCounts;
     private final HashMap<String, HashMap<String, Integer>> noCounts;
+    private final List<ArrayList<String>> data;
 
-    public DataTable(final List<ArrayList<String>> trainingData) {
+    public DataTable(final List<ArrayList<String>> data) {
+        this.data = data;
         labels = new ArrayList<>();
         yesCounts = new HashMap<>();
         noCounts = new HashMap<>();
 
         var parseErrors = 0;
-        for (var i = 0; i < trainingData.size(); i++) {
-            var row = trainingData.get(i);
+        for (var i = 0; i < data.size(); i++) {
+            var row = data.get(i);
             if (i == 0)
                 for (final var label : row) {
                     labels.add(label);
@@ -50,10 +53,14 @@ public final class DataTable {
     }
 
     public double calcEntropy(final String attribute, final String value) {
+        if (!yesCounts.containsKey(attribute)) yesCounts.put(attribute, new HashMap<>());
+        if (!noCounts.containsKey(attribute)) noCounts.put(attribute, new HashMap<>());
         if (!yesCounts.get(attribute).containsKey(value)) yesCounts.get(attribute).put(value, 0);
         if (!noCounts.get(attribute).containsKey(value)) noCounts.get(attribute).put(value, 0);
 
-        if (Objects.equals(attribute, "Result"))
+        if (Objects.equals(attribute, "Result")
+                && yesCounts.get(attribute).get("Yes") != null
+                && noCounts.get(attribute).get("No") != null)
             return calcEntropy(yesCounts.get(attribute).get("Yes"), noCounts.get(attribute).get("No"));
 
         final var result = calcEntropy(yesCounts.get(attribute).get(value), noCounts.get(attribute).get(value));
@@ -72,11 +79,9 @@ public final class DataTable {
     }
 
     public double calcGain(final String attribute) {
-        final var totalCases = yesCounts.get("Result").get("Yes") + noCounts.get("Result").get("No");
-
         var result = calcResultEntropy();
         for (final var key : yesCounts.get(attribute).keySet())
-            result -= (calcCaseCount(attribute, key) / totalCases) * calcEntropy(attribute, key);
+            result -= (calcCaseCount(attribute, key) / data.size()) * calcEntropy(attribute, key);
         return result;
     }
 
@@ -93,5 +98,22 @@ public final class DataTable {
             if (calcGain(label) == calcMaxGain())
                 return label;
         return "";
+    }
+
+    public ArrayList<String> getAttributeValues(final String attribute) {
+        final var keys = new ArrayList<>(yesCounts.get(attribute).keySet());
+        for (final var key : noCounts.get(attribute).keySet())
+            if (!keys.contains(key))
+                keys.add(key);
+        return keys;
+    }
+
+    public List<ArrayList<String>> getWhere(final String attribute, final String value) {
+        final var result = new ArrayList<ArrayList<String>>();
+        for (final var row : data) {
+            if (Objects.equals(row.get(labels.indexOf(attribute)), value))
+                result.add(row);
+        }
+        return result;
     }
 }

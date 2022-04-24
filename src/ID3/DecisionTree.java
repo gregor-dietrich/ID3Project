@@ -17,7 +17,9 @@ public final class DecisionTree {
     }
 
     public void print() {
+        System.out.println("Current Tree Structure:\n--------------------------------------------------");
         root.print("", true);
+        System.out.println("--------------------------------------------------\n");
     }
 
     public Node getRoot() {

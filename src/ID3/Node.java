@@ -3,13 +3,15 @@ package ID3;
 import java.util.HashMap;
 
 public final class Node {
-    private final HashMap<String, Node> children = new HashMap<>();
+    private final HashMap<String, Node> children;
     private String data;
     private Node parent;
     private NodeType type;
 
     public Node(final String data) {
         setData(data);
+        children = new HashMap<>();
+        type = NodeType.LEAF;
     }
 
     public NodeType getType() {
@@ -40,8 +42,8 @@ public final class Node {
         return children;
     }
 
-    public void addChild(final String name) {
-        children.put(name, new Node(name));
+    public void addChild(final Node node) {
+        children.put(node.getData(), node);
     }
 
     public void removeChild(final String name) {
@@ -70,8 +72,8 @@ public final class Node {
     }
 
     public enum NodeType {
-        ROOTNODE,
-        LEAFNODE,
+        ROOT,
+        LEAF,
         BRANCH
     }
 }
