@@ -9,18 +9,19 @@ import java.util.Scanner;
 
 public final class ID3 {
     final static DecisionTree tree = new DecisionTree();
+
     public static void main(String[] args) {
         try {
             buildTree(loadCSV("data.csv"));
-        }
-        catch (FileNotFoundException e) {
+        } catch (FileNotFoundException e) {
             System.out.println("Hmm... something went wrong:\n" + e);
         }
+        tree.print();
     }
 
     private static void buildTree(final List<ArrayList<String>> data) {
-        printArrayList(data);
         final var dt = new DataTable(data);
+
         /*
         System.out.println(dt.calcGain("Outlook"));
         System.out.println(dt.calcGain("Temperature"));
@@ -34,8 +35,7 @@ public final class ID3 {
         if (tree.isEmpty()) {
             tree.setRoot(node);
             node.setNodeType(Node.NodeType.ROOT);
-        }
-        else {
+        } else {
             tree.getCurrent().addChild(node);
             node.setParent(tree.getCurrent());
         }
@@ -46,14 +46,18 @@ public final class ID3 {
             node.addChild(childNode);
             tree.setCurrent(childNode);
             var childData = dt.getWhere(dt.findMaxGainAttribute(), value);
-            buildTree(childData);
+            var childTable = new DataTable(childData);
+            if (childTable.getWhere("Result", "Yes").size() == 1)
+                childNode.addChild(new Node("No"));
+            else if (childTable.getWhere("Result", "No").size() == 1)
+                childNode.addChild(new Node("Yes"));
+            else
+                buildTree(childData);
         }
 
         if (node.getChildren().size() > 0 && node.getNodeType() != Node.NodeType.ROOT)
             node.setNodeType(Node.NodeType.BRANCH);
         tree.setCurrent(node);
-
-        tree.print();
     }
 
     private static List<ArrayList<String>> loadCSV(final String filePath) throws FileNotFoundException {

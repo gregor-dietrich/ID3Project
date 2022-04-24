@@ -1,6 +1,5 @@
 package ID3;
 
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -110,6 +109,7 @@ public final class DataTable {
 
     public List<ArrayList<String>> getWhere(final String attribute, final String value) {
         final var result = new ArrayList<ArrayList<String>>();
+        result.add(labels);
         for (final var row : data) {
             if (Objects.equals(row.get(labels.indexOf(attribute)), value))
                 result.add(row);
