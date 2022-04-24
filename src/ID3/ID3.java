@@ -22,13 +22,10 @@ public final class ID3 {
     }
 
     private static List<ArrayList<String>> loadCSV(final String filePath) throws FileNotFoundException {
-        var data = new ArrayList<ArrayList<String>>();
-        var scan = new Scanner(new File(filePath));
-        while (scan.hasNextLine()) {
-            var line = scan.nextLine();
-            var lineArrayList = new ArrayList<>(Arrays.asList(line.split(";")));
-            data.add(lineArrayList);
-        }
+        final var data = new ArrayList<ArrayList<String>>();
+        final var scan = new Scanner(new File(filePath));
+        while (scan.hasNextLine())
+            data.add(new ArrayList<>(Arrays.asList(scan.nextLine().split(";"))));
         return data;
     }
 

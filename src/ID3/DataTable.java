@@ -35,6 +35,7 @@ public final class DataTable {
                         parseErrors++;
             }
         }
+
         if (parseErrors != 0)
             System.out.println("WARNING: I ran into " + parseErrors + " errors while parsing " + "!");
     }
@@ -51,8 +52,10 @@ public final class DataTable {
     public double calcEntropy(final String attribute, final String value) {
         if (!yesCounts.get(attribute).containsKey(value)) yesCounts.get(attribute).put(value, 0);
         if (!noCounts.get(attribute).containsKey(value)) noCounts.get(attribute).put(value, 0);
+
         if (Objects.equals(attribute, "Result"))
             return calcEntropy(yesCounts.get(attribute).get("Yes"), noCounts.get(attribute).get("No"));
+
         final var result = calcEntropy(yesCounts.get(attribute).get(value), noCounts.get(attribute).get(value));
         return Double.isNaN(result) ? 0 : result;
     }
@@ -64,11 +67,13 @@ public final class DataTable {
     public double calcCaseCount(final String attribute, final String value) {
         if (!yesCounts.get(attribute).containsKey(value)) yesCounts.get(attribute).put(value, 0);
         if (!noCounts.get(attribute).containsKey(value)) noCounts.get(attribute).put(value, 0);
+
         return yesCounts.get(attribute).get(value) + noCounts.get(attribute).get(value);
     }
 
     public double calcGain(final String attribute) {
         final var totalCases = yesCounts.get("Result").get("Yes") + noCounts.get("Result").get("No");
+
         var result = calcResultEntropy();
         for (final var key : yesCounts.get(attribute).keySet())
             result -= (calcCaseCount(attribute, key) / totalCases) * calcEntropy(attribute, key);
@@ -78,9 +83,8 @@ public final class DataTable {
     public double calcMaxGain() {
         var maxGain = 0.0;
         for (final var label : labels)
-            if (calcGain(label) > maxGain && !Objects.equals(label, "Result")) {
+            if (calcGain(label) > maxGain && !Objects.equals(label, "Result"))
                 maxGain = calcGain(label);
-            }
         return maxGain;
     }
 
