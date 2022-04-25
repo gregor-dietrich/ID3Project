@@ -14,14 +14,6 @@ public final class Node {
         type = NodeType.LEAF;
     }
 
-    public NodeType getType() {
-        return type;
-    }
-
-    public void setType(final NodeType type) {
-        this.type = type;
-    }
-
     public String getData() {
         return data;
     }

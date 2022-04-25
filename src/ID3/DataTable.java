@@ -19,7 +19,7 @@ public final class DataTable {
 
         var parseErrors = 0;
         for (var i = 0; i < data.size(); i++) {
-            var row = data.get(i);
+            final var row = data.get(i);
             if (i == 0)
                 for (final var label : row) {
                     labels.add(label);
@@ -27,7 +27,7 @@ public final class DataTable {
                     noCounts.put(label, new HashMap<>());
                 }
             else {
-                var decision = row.get(row.size() - 1);
+                final var decision = row.get(row.size() - 1);
                 for (var j = 0; j < row.size(); j++)
                     if (Objects.equals(decision, "Yes"))
                         yesCounts.get(labels.get(j)).merge(row.get(j), 1, Integer::sum);
@@ -51,40 +51,27 @@ public final class DataTable {
         return (-1 * (yes / total)) * logBase2(yes / total) - (no / total) * logBase2(no / total);
     }
 
-    public double calcEntropy(final String attribute, final String value) {
-        if (!yesCounts.containsKey(attribute)) yesCounts.put(attribute, new HashMap<>());
-        if (!noCounts.containsKey(attribute)) noCounts.put(attribute, new HashMap<>());
-        if (!yesCounts.get(attribute).containsKey(value)) yesCounts.get(attribute).put(value, 0);
-        if (!noCounts.get(attribute).containsKey(value)) noCounts.get(attribute).put(value, 0);
-
-        if (Objects.equals(attribute, "Result")
-                && yesCounts.get(attribute).get("Yes") != null
-                && noCounts.get(attribute).get("No") != null)
+    private double calcEntropy(final String attribute, final String value) {
+        if (Objects.equals(attribute, "Result"))
             return calcEntropy(yesCounts.get(attribute).get("Yes"), noCounts.get(attribute).get("No"));
-
         final var result = calcEntropy(yesCounts.get(attribute).get(value), noCounts.get(attribute).get(value));
         return Double.isNaN(result) ? 0 : result;
     }
 
-    public double calcResultEntropy() {
-        return calcEntropy("Result", "");
-    }
-
-    public double calcCaseCount(final String attribute, final String value) {
+    private double calcCaseCount(final String attribute, final String value) {
         if (!yesCounts.get(attribute).containsKey(value)) yesCounts.get(attribute).put(value, 0);
         if (!noCounts.get(attribute).containsKey(value)) noCounts.get(attribute).put(value, 0);
-
         return yesCounts.get(attribute).get(value) + noCounts.get(attribute).get(value);
     }
 
-    public double calcGain(final String attribute) {
-        var result = calcResultEntropy();
+    private double calcGain(final String attribute) {
+        var result = calcEntropy("Result", "");
         for (final var key : yesCounts.get(attribute).keySet())
             result -= (calcCaseCount(attribute, key) / data.size()) * calcEntropy(attribute, key);
         return result;
     }
 
-    public double calcMaxGain() {
+    private double calcMaxGain() {
         var maxGain = 0.0;
         for (final var label : labels)
             if (calcGain(label) > maxGain && !Objects.equals(label, "Result"))

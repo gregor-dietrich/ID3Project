@@ -12,7 +12,9 @@ public final class ID3 {
 
     public static void main(String[] args) {
         try {
-            buildTree(loadCSV("data.csv"));
+            final var csv = loadCSV("data.csv");
+            printArrayList(csv);
+            buildTree(csv);
         } catch (FileNotFoundException e) {
             System.out.println("Hmm... something went wrong:\n" + e);
         }
@@ -22,15 +24,6 @@ public final class ID3 {
     private static void buildTree(final List<ArrayList<String>> data) {
         final var dt = new DataTable(data);
 
-        /*
-        System.out.println(dt.calcGain("Outlook"));
-        System.out.println(dt.calcGain("Temperature"));
-        System.out.println(dt.calcGain("Humidity"));
-        System.out.println(dt.calcGain("Wind"));
-        System.out.println(dt.findMaxGainAttribute());
-        System.out.println(dt.calcMaxGain());
-        */
-
         final var node = new Node(dt.findMaxGainAttribute());
         if (tree.isEmpty()) {
             tree.setRoot(node);
@@ -39,14 +32,13 @@ public final class ID3 {
             tree.getCurrent().addChild(node);
             node.setParent(tree.getCurrent());
         }
-        tree.setCurrent(node);
 
         for (final var value : dt.getAttributeValues(dt.findMaxGainAttribute())) {
-            var childNode = new Node(value);
+            final var childNode = new Node(value);
             node.addChild(childNode);
             tree.setCurrent(childNode);
-            var childData = dt.getWhere(dt.findMaxGainAttribute(), value);
-            var childTable = new DataTable(childData);
+            final var childData = dt.getWhere(dt.findMaxGainAttribute(), value);
+            final var childTable = new DataTable(childData);
             if (childTable.getWhere("Result", "Yes").size() == 1)
                 childNode.addChild(new Node("No"));
             else if (childTable.getWhere("Result", "No").size() == 1)
@@ -57,7 +49,6 @@ public final class ID3 {
 
         if (node.getChildren().size() > 0 && node.getNodeType() != Node.NodeType.ROOT)
             node.setNodeType(Node.NodeType.BRANCH);
-        tree.setCurrent(node);
     }
 
     private static List<ArrayList<String>> loadCSV(final String filePath) throws FileNotFoundException {
@@ -82,7 +73,6 @@ public final class ID3 {
             col = 0;
         }
 
-        System.out.println("--------------------------------------------------");
         System.out.println("Parsing data:\n--------------------------------------------------");
         for (final var row : data) {
             for (final var item : row) {
