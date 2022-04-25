@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.Scanner;
 
 public final class ID3 {
-    final static DecisionTree tree = new DecisionTree();
+    private final static DecisionTree tree = new DecisionTree();
 
     public static void main(String[] args) {
         try {
