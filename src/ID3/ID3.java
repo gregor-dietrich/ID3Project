@@ -12,13 +12,13 @@ public final class ID3 {
 
     public static void main(String[] args) {
         try {
-            final var csv = loadCSV("data.csv");
+            final var csv = loadCSV("csv/play-sports.csv");
             printArrayList(csv);
             buildTree(csv);
+            tree.print();
         } catch (FileNotFoundException e) {
             System.out.println("Hmm... something went wrong:\n" + e);
         }
-        tree.print();
     }
 
     private static void buildTree(final List<ArrayList<String>> data) {

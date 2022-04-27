@@ -1,0 +1,15 @@
+Stability;Error;Sign;Wind;Magnitude;Visibility;Result
+xstab;*;*;*;*;Yes;No
+stab;lx;*;*;*;Yes;No
+stab;xl;*;*;*;Yes;No
+stab;mm;nn;tail;*;Yes;No
+*;*;*;*;OutOfRange;Yes;No
+stab;ss;*;*;Low;Yes;Yes
+stab;ss;*;*;Medium;Yes;Yes
+stab;ss;*;*;Strong;Yes;Yes
+stab;mm;pp;head;Low;Yes;Yes
+stab;mm;pp;head;Medium;Yes;Yes
+stab;mm;pp;tail;Low;Yes;Yes
+stab;mm;pp;tail;Medium;Yes;Yes
+stab;mm;pp;head;Strong;Yes;No
+stab;mm;pp;tail;Strong;Yes;Yes
